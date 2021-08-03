@@ -15,8 +15,13 @@ jobs:
           ENABLER_SECRET: ${{ secrets.ACTION_ENABLER }}
         run: |
           unset SECRET_EXISTS
+<<<<<<< HEAD
           if [ -n $ENABLER_SECRET ]; then SECRET_EXISTS='true' ; fi
           echo ::set-output name=ACTIONS_ENABLED::${SECRET_EXISTS}
+=======
+          if [ -n "$ENABLER_SECRET" ]; then SECRET_EXISTS=true ; fi
+          echo "::set-output name=ACTIONS_ENABLED::$SECRET_EXISTS"
+>>>>>>> 8c639e21a5e... Fixes secret lock on actions. (#60677)
       - name: "Setup python"
         if: steps.value_holder.outputs.ACTIONS_ENABLED
         uses: actions/setup-python@v1
