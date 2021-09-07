@@ -88,12 +88,18 @@
 	if(listeningTo)
 		UnregisterSignal(listeningTo, COMSIG_MOVABLE_MOVED)
 	RegisterSignal(user, COMSIG_MOVABLE_MOVED, .proc/on_mob_move)
+	RegisterSignal(user, COMSIG_ATOM_DIR_CHANGE, .proc/update_inv_hands_wrapper) //Shouldn't be that expensive to redraw inhands every time the PA user steps if the PA itself is 'rare'
 	listeningTo = user
 	user.base_pixel_y = user.base_pixel_y + 6
 	user.pixel_y = user.base_pixel_y
 	ADD_TRAIT(user, TRAIT_FORCED_STANDING, "power_armor") //It's a suit of armor, it ain't going to fall over just because the pilot is dead
 	ADD_TRAIT(user, TRAIT_NOSLIPALL, "power_armor")
 	RegisterSignal(user, COMSIG_ATOM_CAN_BE_PULLED, .proc/reject_pulls)
+
+//RegisterSignal() is pain; we'll just make a wrapper and have that update the user
+/obj/item/clothing/suit/space/hardsuit/ms13/power_armor/proc/update_inv_hands_wrapper()
+	var/mob/living/carbon/typed_user = listeningTo
+	typed_user.update_inv_hands()
 
 /obj/item/clothing/suit/space/hardsuit/ms13/power_armor/proc/reject_pulls(datum/source, mob/living/puller)
 	SIGNAL_HANDLER
@@ -108,6 +114,7 @@
 	if(listeningTo)
 		UnregisterSignal(listeningTo, COMSIG_MOVABLE_MOVED)
 	listeningTo = null
+	UnregisterSignal(user, COMSIG_ATOM_DIR_CHANGE)
 	REMOVE_TRAIT(user, TRAIT_FORCED_STANDING, "power_armor") //It's a suit of armor, it ain't going to fall over just because the pilot is dead
 	REMOVE_TRAIT(user, TRAIT_NOSLIPALL, "power_armor")
 	UnregisterSignal(user, COMSIG_ATOM_CAN_BE_PULLED)
