@@ -122,9 +122,9 @@
 				if(WEST)
 					switch(current_hand)
 						if("left")
-							. = -2
+							. = 2
 						if("right")
-							. = 4
+							. = -4
 				if(EAST)
 					switch(current_hand)
 						if("left")
