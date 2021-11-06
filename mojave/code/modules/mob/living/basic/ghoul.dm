@@ -1,6 +1,6 @@
 /mob/living/basic/ms13/ghoul
 	name = "feral ghoul"
-	desc = "A being from a realm with only 2 dimensions. At least it's trying to stay faced towards you."
+	desc = "The remnants of what was once a human being with aspirations and desires. Reduced to a soul lacking husk of flesh with a single purpose."
 	icon = 'mojave/icons/mob/ms13enemies.dmi'
 	icon_state = "feralghoul"
 	mob_biotypes = MOB_HUMANOID
