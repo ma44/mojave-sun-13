@@ -315,6 +315,12 @@
 		. = L[L.len]
 		L.len--
 
+/// Returns the top (last) element from the list, does not remove it from the list. Stack functionality.
+/proc/peek(list/target_list)
+	var/list_length = length(target_list)
+	if(list_length != 0)
+		return target_list[list_length]
+
 /proc/popleft(list/L)
 	if(L.len)
 		. = L[1]
@@ -638,6 +644,18 @@
 
 	return TRUE
 
+//MOJAVE MODULE OUTDOOR_EFFECTS -- BEGIN
+//Scales a range (i.e 1,100) and picks an item from the list based on your passed value
+//i.e in a list with length 4, a 25 in the 1-100 range will give you the 2nd item
+//This assumes your ranges start with 1, I am not good at math and can't do linear scaling
+/proc/scale_range_pick(min,max,value,list/L)
+	if(!length(L))
+		return null
+	var/index = 1 + (value * (length(L) - 1)) / (max - min)
+	return L[index]
+//MOJAVE MODULE OUTDOOR_EFFECTS -- END
+
+
 #define LAZY_LISTS_OR(left_list, right_list)\
 	( length(left_list)\
 		? length(right_list)\
@@ -657,3 +675,25 @@
 		if(condition.Invoke(i))
 			. |= i
 
+///Returns a list with all weakrefs resolved
+/proc/recursive_list_resolve(list/list_to_resolve)
+	. = list()
+	for(var/element in list_to_resolve)
+		if(istext(element))
+			. += element
+			var/possible_assoc_value = list_to_resolve[element]
+			if(possible_assoc_value)
+				.[element] = recursive_list_resolve_element(possible_assoc_value)
+		else
+			. += list(recursive_list_resolve_element(element))
+
+///Helper for /proc/recursive_list_resolve
+/proc/recursive_list_resolve_element(element)
+	if(islist(element))
+		var/list/inner_list = element
+		return recursive_list_resolve(inner_list)
+	else if(isweakref(element))
+		var/datum/weakref/ref = element
+		return ref.resolve()
+	else
+		return element

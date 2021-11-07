@@ -406,6 +406,20 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		if (!stealth_admin)
 			deadchat_broadcast(" has reconnected.", "<b>[mob][mob.get_realname_string()]</b>", follow_target = mob, turf_target = get_turf(mob), message_type = DEADCHAT_LOGIN_LOGOUT, admin_only=!announce_leave)
 	add_verbs_from_config()
+
+	// This needs to be before the client age from db is updated as it'll be updated by then.
+	var/datum/db_query/query_last_connected = SSdbcore.NewQuery(
+		"SELECT lastseen FROM [format_table_name("player")] WHERE ckey = :ckey",
+		list("ckey" = ckey)
+	)
+	if(query_last_connected.warn_execute() && length(query_last_connected.rows))
+		query_last_connected.NextRow()
+		var/time_stamp = query_last_connected.item[1]
+		var/unread_notes = get_message_output("note", ckey, FALSE, time_stamp)
+		if(unread_notes)
+			to_chat(src, unread_notes)
+	qdel(query_last_connected)
+
 	var/cached_player_age = set_client_age_from_db(tdata) //we have to cache this because other shit may change it and we need it's current value now down below.
 	if (isnum(cached_player_age) && cached_player_age == -1) //first connection
 		player_age = 0
@@ -1104,14 +1118,22 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		holder.filteriffic = new /datum/filter_editor(in_atom)
 		holder.filteriffic.ui_interact(mob)
 
+//MOJAVE MODULE OUTDOOR_EFFECTS -- BEGIN
+/client/proc/open_particle_editor(atom/in_atom)
+	if(holder)
+		holder.particool = new /datum/particle_editor(in_atom)
+		holder.particool.ui_interact(mob)
+//MOJAVE MODULE OUTDOOR_EFFECTS -- END
 
 /client/proc/set_right_click_menu_mode(shift_only)
 	if(shift_only)
 		winset(src, "mapwindow.map", "right-click=true")
+		winset(src, "mapwindow.hud", "right-click=true") // MOJAVE SUN EDIT ADDITION - HUD skin
 		winset(src, "ShiftUp", "is-disabled=false")
 		winset(src, "Shift", "is-disabled=false")
 	else
 		winset(src, "mapwindow.map", "right-click=false")
+		winset(src, "mapwindow.hud", "right-click=false") // MOJAVE SUN EDIT ADDITION - HUD skin
 		winset(src, "default.Shift", "is-disabled=true")
 		winset(src, "default.ShiftUp", "is-disabled=true")
 

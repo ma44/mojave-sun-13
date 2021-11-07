@@ -20,6 +20,10 @@
 	icon = 'icons/obj/doors/airlocks/station/medical.dmi'
 	assemblytype = /obj/structure/door_assembly/door_assembly_med
 
+/obj/machinery/door/airlock/hydroponics	//Hydroponics front doors!
+	icon = 'icons/obj/doors/airlocks/station/hydroponics.dmi'
+	assemblytype = /obj/structure/door_assembly/door_assembly_hydro
+
 /obj/machinery/door/airlock/maintenance
 	name = "maintenance access"
 	icon = 'icons/obj/doors/airlocks/station/maintenance.dmi'
@@ -99,6 +103,10 @@
 	normal_integrity = 400
 
 /obj/machinery/door/airlock/medical/glass
+	opacity = FALSE
+	glass = TRUE
+
+/obj/machinery/door/airlock/hydroponics/glass //Uses same icon as medical/glass, maybe update it with its own unique icon one day?
 	opacity = FALSE
 	glass = TRUE
 
@@ -197,8 +205,13 @@
 	..()
 
 /obj/machinery/door/airlock/uranium/proc/radiate()
-	radiation_pulse(get_turf(src), 150)
-	return
+	radiation_pulse(
+		src,
+		max_range = 2,
+		threshold = RAD_LIGHT_INSULATION,
+		chance = URANIUM_IRRADIATION_CHANCE,
+		minimum_exposure_time = URANIUM_RADIATION_MINIMUM_EXPOSURE_TIME,
+	)
 
 /obj/machinery/door/airlock/uranium/glass
 	opacity = FALSE
@@ -598,7 +611,7 @@
 	desc = "An airlock hastily corrupted by blood magic, it is unusually brittle in this state."
 	normal_integrity = 150
 	damage_deflection = 5
-	armor = list(MELEE = 0, BULLET = 0, LASER = 0,ENERGY = 0, BOMB = 0, BIO = 0, RAD = 0, FIRE = 0, ACID = 0)
+	armor = list(MELEE = 0, BULLET = 0, LASER = 0,ENERGY = 0, BOMB = 0, BIO = 0, FIRE = 0, ACID = 0)
 
 //////////////////////////////////
 /*

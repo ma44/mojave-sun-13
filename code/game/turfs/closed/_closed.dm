@@ -4,7 +4,6 @@
 	opacity = TRUE
 	density = TRUE
 	blocks_air = TRUE
-	flags_1 = RAD_PROTECT_CONTENTS_1 | RAD_NO_CONTAMINATE_1
 	rad_insulation = RAD_MEDIUM_INSULATION
 	pass_flags_self = PASSCLOSEDTURF
 	/// Icon path. Smoothing objects larger than 32x32 require a visual object to represent the excess part, in order not to increase its hitbox. We call that a frill.
@@ -97,11 +96,11 @@ INITIALIZE_IMMEDIATE(/turf/closed/indestructible/splashscreen)
 	SStitle.splash_turf = src
 	if(SStitle.icon)
 		icon = SStitle.icon
-	handle_generic_titlescreen_sizes()
+		handle_generic_titlescreen_sizes()
 
 ///helper proc that will center the screen if the icon is changed to a generic width, to make admins have to fudge around with pixel_x less. returns null
 /turf/closed/indestructible/splashscreen/proc/handle_generic_titlescreen_sizes()
-	var/icon/size_check = icon(icon, icon_state)
+	var/icon/size_check = icon(SStitle.icon, icon_state)
 	var/width = size_check.Width()
 	if(width == 480) // 480x480 is nonwidescreen
 		pixel_x = 0

@@ -5,7 +5,7 @@
 
 /datum/map_config
 	// Metadata
-	var/config_filename = "_maps/metastation.json"
+	var/config_filename = "_maps/Mammoth.json"
 	var/defaulted = TRUE  // set to FALSE by LoadConfig() succeeding
 	// Config from maps.txt
 	var/config_max_users = 0
@@ -13,10 +13,10 @@
 	var/voteweight = 1
 	var/votable = FALSE
 
-	// Config actually from the JSON - should default to Meta
-	var/map_name = "Meta Station"
-	var/map_path = "map_files/MetaStation"
-	var/map_file = "MetaStation.dmm"
+	// Config actually from the JSON - should default to Mammoth
+	var/map_name = "Mammoth"
+	var/map_path = "map_files/Mammoth"
+	var/map_file = "Mammoth.dmm"
 
 	var/traits = null
 	var/space_ruin_levels = 7
@@ -34,14 +34,23 @@
 	/// Dictionary of job sub-typepath to template changes dictionary
 	var/job_changes = list()
 
-/proc/load_map_config(filename = "data/next_map.json", default_to_box, delete_after, error_if_missing = TRUE)
+	//List of particle_weather types for this map
+	var/particle_weather = list() //MOJAVE MODULE OUTDOOR_EFFECTS
+
+/proc/load_map_config(filename = "next_map", default_to_box, delete_after, error_if_missing = TRUE) //MOJAVE
+	filename = "data/[filename].json" //MOJAVE
 	var/datum/map_config/config = new
+	var/datum/map_config/default_map = /datum/map_config
 	if (default_to_box)
 		return config
 	if (!config.LoadConfig(filename, error_if_missing))
 		qdel(config)
-		config = new /datum/map_config  // Fall back to Box
-	if (delete_after)
+		// MOJAVE SUN -- If next_map is missing when we try to load, attempt to load the default json, then fall back to the object
+		if (filename == "data/next_map.json")
+			if(!config.LoadConfig(initial(default_map.config_filename), error_if_missing))
+				qdel(config)
+				config = new default_map  // Fall back to Box
+	else if (delete_after)
 		fdel(filename)
 	return config
 
@@ -119,6 +128,14 @@
 	else if (!isnull(traits))
 		log_world("map_config traits is not a list!")
 		return
+
+	//MOJAVE MODULE OUTDOOR_EFFECTS -- BEGIN
+	if ("particle_weather" in json)
+		if(!islist(json["particle_weather"]))
+			log_world("map_config \"particle_weather\" field is missing or invalid!")
+			return
+		particle_weather = json["particle_weather"]
+	//MOJAVE MODULE OUTDOOR_EFFECTS -- END
 
 	var/temp = json["space_ruin_levels"]
 	if (isnum(temp))
