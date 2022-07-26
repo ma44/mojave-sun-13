@@ -18,10 +18,10 @@ GLOBAL_LIST_INIT(sentrybot_hostiles_located_sound, list(
 									))
 
 GLOBAL_LIST_INIT(sentrybot_idle_patrol_sound, list(
-									'mojave/sound/ms13npc/sentrybot/idle_patrol1.ogg' = 5 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/idle_patrol2.ogg' = 9 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/idle_patrol3.ogg' = 5 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/idle_patrol4.ogg' = 4 SECONDS
+									'mojave/sound/ms13npc/sentrybot/idle_patrol1.ogg' = 7 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/idle_patrol2.ogg' = 11 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/idle_patrol3.ogg' = 7 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/idle_patrol4.ogg' = 6 SECONDS
 									))
 
 //Whenever a new hostile enemy is picked
@@ -40,10 +40,10 @@ GLOBAL_LIST_INIT(sentrybot_switch_to_patrol_sound, list(
 
 //In combat
 GLOBAL_LIST_INIT(sentrybot_in_combat_sound, list(
-									'mojave/sound/ms13npc/sentrybot/in_combat1.ogg' = 6 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/in_combat2.ogg' = 5 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/in_combat3.ogg' = 6 SECONDS,
-									'mojave/sound/ms13npc/sentrybot/in_combat4.ogg' = 7 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/in_combat1.ogg' = 8 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/in_combat2.ogg' = 7 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/in_combat3.ogg' = 8 SECONDS,
+									'mojave/sound/ms13npc/sentrybot/in_combat4.ogg' = 9 SECONDS,
 									))
 
 //Dying before self destruct
@@ -65,12 +65,12 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	footstep_type = null //Element is modified in Initialize()
 	robust_searching = TRUE
 	minimum_distance = 3 //We'll decrease this if needed
-	retreat_distance = null
+	retreat_distance = 3
 	speed = 1
 	move_to_delay = 4
 	var/last_move_done_at = 0
 	//var/drift_cooldown = 0
-	attack_sound = "slam"
+	attack_sound = 'mojave/sound/ms13weapons/meleesounds/heavyblunt_hit1.ogg'
 	loot = list(/obj/item/stack/sheet/ms13/scrap_steel/ten, /obj/item/stack/sheet/ms13/scrap_electronics/ten, /obj/item/stack/sheet/ms13/scrap_parts/ten, /obj/item/stack/sheet/ms13/circuits/eight)
 	vision_range = 12
 	aggro_vision_range = 12
@@ -78,14 +78,14 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	maxHealth = 1000
 	health = 1000
 	idlechance = 20
-	melee_damage_lower = 30
-	melee_damage_upper = 30
+	melee_damage_lower = 25
+	melee_damage_upper = 25
 	subtractible_armour_penetration = 15
 	sharpness = NONE
 	wound_bonus = 8
 	bare_wound_bonus = 0
 	ranged = TRUE
-	stat_attack = HARD_CRIT
+	stat_attack = CONSCIOUS
 	casingtype = /obj/item/ammo_casing/energy/ms13/laser/sentrybot
 	ranged_cooldown = 5 SECONDS
 	rapid = 20
@@ -103,7 +103,6 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	var/already_firing = FALSE
 	var/speech_cooldown = 0
 	var/datum/looping_sound/treads/soundloop
-	stop_automated_movement = TRUE
 
 /datum/looping_sound/treads
 	start_sound = 'mojave/sound/ms13npc/sentrybot/treads_start.mp3'
@@ -112,12 +111,10 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	mid_length = 1
 	end_sound = 'mojave/sound/ms13npc/sentrybot/treads_end.mp3'
 	vary = FALSE
-	volume = 50
+	volume = 25
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/Initialize()
 	. = ..()
-	rocket = new /datum/action/cooldown/launch_rocket()
-	rocket.Grant(src)
 	grenade = new /datum/action/cooldown/launch_grenade()
 	grenade.Grant(src)
 	RegisterSignal(src, COMSIG_MOVABLE_MOVED, .proc/play_move_sound)
@@ -127,7 +124,7 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	SIGNAL_HANDLER
 	//playsound(src, 'sound/mecha/mechstep.ogg', 40, TRUE)
 	last_move_done_at = world.time
-	addtimer(CALLBACK(src, .proc/check_if_loop_should_continue, world.time), move_to_delay + 0.8 SECONDS)
+	addtimer(CALLBACK(src, .proc/check_if_loop_should_continue, world.time), move_to_delay + 0.5 SECONDS)
 	/*
 	if(drift_cooldown > world.time) //Special move cooldown + drifting shouldn't restart the tread sounds
 		return
@@ -140,6 +137,12 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 		return
 	..()
 */
+
+//Anti original code
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/AttackingTarget(atom/attacked_target)
+	. = ..()
+	RangedAttack(target)
+	return .
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/proc/check_if_loop_should_continue(the_time)
 	if(the_time != last_move_done_at)
@@ -191,7 +194,7 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 		return
 	var/random_speech = pick(glob_list_used)
 	speech_cooldown = world.time + glob_list_used[random_speech]
-	playsound(src, random_speech, 50, FALSE)
+	playsound(src, random_speech, 80, FALSE)
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/Destroy()
 	QDEL_NULL(rocket)
@@ -201,11 +204,10 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/OpenFire(atom/A, actually_fire = FALSE)
 	//Main gun time
-	//Go into melee range if we can't actually see the target
+	//If we don't have LoS on our target, we should see if there's any other targets we could be killing
+	//Otherwise, we'll go chase the target by setting a lowered minimum distance
 	if(!can_see(src, target, length = 10))
-		minimum_distance = 1
-	else
-		minimum_distance = initial(minimum_distance)
+		FindTarget(possible_targets = null, HasTargetsList = FALSE)
 	if(actually_fire)
 		. = ..()
 		playsound(src, 'mojave/sound/ms13npc/sentrybot/laser_gatling.ogg', 50, FALSE)
@@ -218,9 +220,31 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 			already_firing = TRUE
 	return
 
+//Don't bother kiting if we lose sight of the target, we gotta rush them
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/proc/checkLoS()
+	if(!can_see(src, target, length = 10))
+		minimum_distance = 1
+		retreat_distance = 1
+	else
+		minimum_distance = 3
+		retreat_distance = 3
+
+//Quick LoS checking to begin chasing of target rather than keeping a minimum distance
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/GiveTarget(new_target)
+	if(new_target && target && (new_target != target))
+		UnregisterSignal(target, COMSIG_MOVABLE_MOVED)
+	. = ..()
+	if(target)
+		RegisterSignal(target, COMSIG_MOVABLE_MOVED, .proc/checkLoS)
+
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/LoseTarget()
+	if(target)
+		UnregisterSignal(target, COMSIG_MOVABLE_MOVED)
+	. = ..()
+
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/bullet_act(obj/projectile/Proj)
 	if(istype(Proj, /obj/projectile/bullet/shrapnel))
-		visible_message(span_danger("The [Proj] bounces off of the [src]!"))
+		visible_message(span_danger("[Proj] bounces off of the [src]!"))
 		return BULLET_ACT_BLOCK
 	return ..()
 
@@ -228,9 +252,6 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	if(!client)
 		if(grenade.IsAvailable() && can_see(src, target, 10))
 			grenade.Trigger(target = target)
-			return
-		if(rocket.IsAvailable())
-			rocket.Trigger(target = target)
 			return
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/AIShouldSleep(list/possible_targets)
@@ -248,11 +269,13 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	. = ..()
 	if(client)
 		return
-	switch(AIStatus)
-		if(AI_ON)
-			play_speech_sound(GLOB.sentrybot_in_combat_sound, bypass_cooldown = FALSE)
-		if(AI_IDLE)
-			play_speech_sound(GLOB.sentrybot_idle_patrol_sound, bypass_cooldown = FALSE)
+	if(AIStatus == AI_ON)
+		play_speech_sound(GLOB.sentrybot_in_combat_sound, bypass_cooldown = FALSE)
+
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/handle_automated_speech()
+	. = ..()
+	if(AIStatus == AI_IDLE)
+		play_speech_sound(GLOB.sentrybot_idle_patrol_sound, bypass_cooldown = FALSE)
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/toggle_ai(togglestatus)
 	var/oldAIStatus = AIStatus
@@ -266,14 +289,23 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 
 /mob/living/simple_animal/hostile/ms13/robot/sentrybot/adjustHealth(amount, updating_health = TRUE, forced = FALSE)
 	. = ..()
-	if(amount > 10 && prob(10))
+	if(amount > 10 && prob(20))
 		playsound(src, pick(GLOB.sentrybot_damaged_sound), 50, FALSE)
 
-/mob/living/simple_animal/hostile/ms13/robot/sentrybot/FindTarget(list/possible_targets, HasTargetsList = 0)
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/FindTarget(list/possible_targets, HasTargetsList = 0, IgnoreRepetiveCall = FALSE)
 	var/old_target = target //If we change target (NULL => new target, old target => new target) play a sound effect
 	. = ..()
 	if((old_target != null) && (old_target != target) && !client)
 		play_speech_sound(GLOB.sentrybot_new_hostile_sound, bypass_cooldown = FALSE)
+	//If we still don't have a target, we should try finding a target again but in critical condition
+	if(!target && !IgnoreRepetiveCall && (stat_attack != HARD_CRIT))
+		stat_attack = HARD_CRIT
+		FindTarget(possible_targets, HasTargetsList, IgnoreRepetiveCall = TRUE)
+		//We'll give a grace period for the sentry bot being able to attack crit'd targets for about 1 volley
+		addtimer(CALLBACK(src, .proc/reset_stat_attack), 3 SECONDS)
+
+/mob/living/simple_animal/hostile/ms13/robot/sentrybot/proc/reset_stat_attack()
+	stat_attack = initial(stat_attack)
 
 //randomspread prerequisite
 /obj/item/ammo_casing/energy/ms13/laser/sentrybot
@@ -332,12 +364,12 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 /datum/action/cooldown/launch_grenade
 	name = "Launch a shrapnel grenade"
 	desc = "Launches a cool grenade at the enemy"
-	cooldown_time = 10 SECONDS
+	cooldown_time = 8 SECONDS
 	click_to_activate = TRUE
 	var/obj/item/grenade/grenade = /obj/item/grenade/frag/sentrybot
 
 /datum/action/cooldown/launch_grenade/Activate(atom/target_atom)
-	StartCooldown(10 SECONDS)
+	StartCooldown(8 SECONDS)
 	launch_grenade(target_atom)
 	StartCooldown()
 
@@ -361,12 +393,36 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	desc = "An anti-personnel fragmentation grenade, this weapon excels at killing soft targets by shredding them with metal shrapnel."
 	icon = 'mojave/icons/objects/throwables/ms_bomb_sentrybot.dmi'
 	icon_state = "bomb"
-	shrapnel_type = /obj/projectile/bullet/shrapnel
+	shrapnel_type = /obj/projectile/bullet/shrapnel/ms13
 	pass_flags = PASSMOB
-	shrapnel_radius = 2
+	shrapnel_radius = 4
 	ex_heavy = -1
 	ex_light = 1
 	ex_flame = 2
+
+/obj/item/shrapnel/ms13
+	name = "shrapnel shard"
+	weak_against_armour = FALSE
+	icon = 'mojave/icons/objects/projectiles/projectiles.dmi'
+	icon_state = "nail" //placeholder
+	sharpness = SHARP_POINTY
+
+/obj/projectile/bullet/shrapnel/ms13
+	name = "flying shrapnel shard"
+	damage = 15
+	subtractible_armour_penetration = 20
+	range = 25
+	weak_against_armour = FALSE
+	icon = 'mojave/icons/objects/projectiles/projectiles.dmi'
+	icon_state = "nail" //placeholder
+	ricochets_max = 2
+	ricochet_chance = 75
+	shrapnel_type = /obj/item/shrapnel/ms13
+	ricochet_incidence_leeway = 60
+	sharpness = SHARP_POINTY
+	wound_bonus = 10
+	bare_wound_bonus = 15
+	embedding = list("embedded_pain_multiplier" = 2, "embed_chance" = 50, "embedded_fall_chance" = 10, "ignore_throwspeed_threshold" = TRUE)
 
 //A flamethrower that's essentially a forward facing backblast of the rocket launcher
 /datum/action/cooldown/flamethrow

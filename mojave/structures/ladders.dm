@@ -2,6 +2,7 @@
 	name = "ladder"
 	desc = "A questionable metal ladder. There's got to be stairs around, right?"
 	icon = 'mojave/icons/structure/ladders.dmi'
+	icon_state = "ladder10"
 	resistance_flags = INDESTRUCTIBLE
 	travel_time = 2 SECONDS
 
@@ -65,6 +66,12 @@
 	name = "manhole"
 	desc = "A manhole ladder, you could probably push the cover off from here, or try dragging it back on."
 	travel_time = 2 SECONDS
+	pixel_y = 7
+	icon_state = "manhole_closed"
+
+/obj/structure/ladder/ms13/manhole/examine(mob/user)
+	. = ..()
+	. += "<span class='notice'>Use <b>RIGHT-CLICK</b> on [src] to open or close it.</span>"
 
 /obj/structure/ladder/ms13/manhole/attack_hand_secondary(mob/living/user, list/modifiers)
 	. = ..()
@@ -91,7 +98,7 @@
 			obstructed = TRUE
 			to_chat(user, span_notice("You carefully drag and slide the cover back on from below."))
 			return
-			
+
 	else
 		if(obstructed)
 			to_chat(user, span_warning("It's so heavy! Surely there's a better way of doing this."))
@@ -141,11 +148,14 @@
 
 /obj/structure/ladder/ms13/bunker
 	name = "bunker"
+	icon_state = "bunker_closed"
 	travel_time = 2 SECONDS
 
-/obj/structure/ladder/ms13/bunker/welder_act_secondary(mob/living/user, obj/item/tool)
+/obj/structure/ladder/ms13/bunker/welder_act_secondary(mob/living/user, obj/item/I)
 	if(down && obstructed)
-		if(do_after(user, 8 SECONDS * tool.toolspeed, target = src, interaction_key = DOAFTER_SOURCE_LADDERBLOCKERS))
+		if(!I.tool_start_check(user, amount=0))
+			return TRUE
+		if(I.use_tool(src, user, 15 SECONDS, volume=80))
 			obstructed = FALSE
 			icon_state = "bunker_open"
 			desc = "Looks like the entrance to some bunker. The bars on the grate have been cut off, allowing entry."
