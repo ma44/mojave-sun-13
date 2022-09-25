@@ -243,9 +243,12 @@
 
 	if(!nodamage && (damage_type == BRUTE || damage_type == BURN) && iswallturf(target_loca) && prob(75))
 		var/turf/closed/wall/W = target_loca
+		var/obj/effect/dummy_effect = new(get_turf(target_loca))
 		if(impact_effect_type && !hitscan)
 			new impact_effect_type(target_loca, hitx, hity)
-
+			dummy_effect.particles = new /particles/bullet_impact()
+			dummy_effect.particles.position = list(hitx, hity, z)
+			QDEL_IN(dummy_effect, 1 SECONDS)
 		W.add_dent(WALL_DENT_SHOT, hitx, hity)
 
 		return BULLET_ACT_HIT
