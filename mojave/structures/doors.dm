@@ -194,6 +194,7 @@
 	if(do_after(M, 0.5 SECONDS, interaction_key = DOAFTER_SOURCE_DOORS))
 		try_to_activate_door(M)
 
+
 /obj/machinery/door/unpowered/ms13/attackby(obj/item/I, mob/living/M, params)
 	. = ..()
 	if(locked && !(M.combat_mode))
