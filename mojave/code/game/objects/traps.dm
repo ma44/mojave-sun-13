@@ -13,9 +13,11 @@
 	icon = 'mojave/icons/objects/ms_traps.dmi'
 	icon_state = "oneshot_armed"
 	var/obj/machinery/door/unpowered/ms13/trigger_door
+	var/obj/item/gun/the_gun
 
 /obj/item/shotgun_trap/Initialize(mapload)
 	. = ..()
+	the_gun = new /obj/item/gun/ballistic/rifle/ms13/hunting/surplus(src)
 	dir = 8
 	for(var/obj/machinery/door/unpowered/ms13/door in range(7))
 		if(door && get_dir(src, door) == dir)
