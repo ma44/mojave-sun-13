@@ -4362,6 +4362,7 @@
 #include "mojave\code\controllers\subsystem\advanced_pathfinding.dm"
 #include "mojave\code\datums\documents.dm"
 #include "mojave\code\datums\physiology.dm"
+#include "mojave\code\datums\ai\basic_mobs\basic_subtrees\sleeping.dm"
 #include "mojave\code\datums\ai\basic_mobs\basic_subtrees\speech_subtree.dm"
 #include "mojave\code\datums\ai\movement\ai_movement_bypass_tables.dm"
 #include "mojave\code\datums\armor\subarmor.dm"

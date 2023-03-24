@@ -2,8 +2,8 @@
 	name = "feral ghoul"
 	desc = "A rotting, deformed ghoul that has gone feral either due to excess radiation exposure or simply the test of time."
 	icon = 'mojave/icons/mob/ms13enemies.dmi'
-	icon_state = "feralghoul"
-	icon_dead = "feralghoul_dead"
+	icon_state = "feralghoul_brown"
+	icon_dead = "feralghoul_brown_dead"
 	mob_biotypes = MOB_HUMANOID
 	gender = MALE
 	health = 100
@@ -43,6 +43,23 @@
 	idle_behavior = /datum/idle_behavior/idle_random_walk
 	planning_subtrees = list(
 		/datum/ai_planning_subtree/simple_find_target,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree/ms13/ghoul,
+		/datum/ai_planning_subtree/random_speech/ms13/ghoul
+	)
+
+/mob/living/basic/ms13/ghoul/sleeping
+	ai_controller = /datum/ai_controller/basic_controller/ms13/ghoul/sleeping
+
+/datum/ai_controller/basic_controller/ms13/ghoul/sleeping
+	blackboard = list(
+		BB_TARGETTING_DATUM = new /datum/targetting_datum/basic(),
+		BB_VISION_RANGE = 1
+	)
+
+	ai_movement = /datum/ai_movement/basic_avoidance/bypass_tables
+	idle_behavior = /datum/idle_behavior
+	planning_subtrees = list(
+		/datum/ai_planning_subtree/simple_find_target/sleeping,
 		/datum/ai_planning_subtree/basic_melee_attack_subtree/ms13/ghoul,
 		/datum/ai_planning_subtree/random_speech/ms13/ghoul
 	)
