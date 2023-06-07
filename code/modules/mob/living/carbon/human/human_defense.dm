@@ -1,3 +1,5 @@
+#define STICK_TO_GROUND (1<<1)
+
 /mob/living/carbon/human/getarmor(def_zone, type)
 	var/armorval = 0
 	var/organnum = 0
@@ -185,6 +187,13 @@
 			zone_hit_chance += 20 //MOJAVE EDIT - Original value is 10, this makes you 95% likely to hit what you are aiming on a grounded person
 		affecting = get_bodypart(ran_zone(user.zone_selected, zone_hit_chance))
 	var/target_area = parse_zone(check_zone(user.zone_selected)) //our intended target
+	for(var/i = 0 to 7)
+		var/obj/effect/decal/cleanable/blood/drip/drop = new(get_turf(src))
+		drop.pixel_z = 8
+		drop.pixel_y = rand(-4, 4)
+		drop.pixel_x = rand(-4, 4)
+		drop.AddComponent(/datum/component/movable_physics, physics_flags = STICK_TO_GROUND, horizontal_velocity = rand(1500, 2000) / 100, vertical_velocity = rand(0, 0) / 100, horizontal_friction = rand(20, 24) / 100, z_floor = 0, angle = rand(15, 45))
+
 
 	SEND_SIGNAL(I, COMSIG_ITEM_ATTACK_ZONE, src, user, affecting)
 

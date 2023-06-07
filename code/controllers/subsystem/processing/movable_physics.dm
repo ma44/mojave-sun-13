@@ -1,5 +1,5 @@
 ///Real fast ticking subsystem for moving movables via modifying pixel_x/y/z
-PROCESSING_SUBSYSTEM_DEF(movablephysics)
+PROCESSING_SUBSYSTEM_DEF(movable_physics)
 	name = "Movable Physics"
 	wait = 0.05 SECONDS
 	stat_tag = "MP"
