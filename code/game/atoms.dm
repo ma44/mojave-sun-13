@@ -17,6 +17,8 @@
 
 	///First atom flags var
 	var/flags_1 = NONE
+	//Mojave Sun edit; flags specifically used for MS13 content
+	var/ms13_flags_1 = NONE
 	///Intearaction flags
 	var/interaction_flags_atom = NONE
 
@@ -158,6 +160,8 @@
 
 	var/resistance_flags = NONE // INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ON_FIRE | UNACIDABLE | ACID_PROOF
 
+	var/hitted_sound //MOJAVE SUN EDIT - Hit Sounds, Why the devilshit isnt this a base feature, what goober decided every objects hit sound should be dictated by one fwuarging ogg
+	COOLDOWN_DECLARE(pointing_cooldown) //MOJAVE SUN EDIT - Pointing cooldown declaration
 /**
  * Called when an atom is created in byond (built in engine proc)
  *
@@ -1130,8 +1134,8 @@
  * Arguments:
  * * clean_types: any of the CLEAN_ constants
  */
-/atom/proc/wash(clean_types)
-	SHOULD_CALL_PARENT(TRUE)
+/atom/proc/wash(clean_types, mob/living/user, obj/washthing) //MOJAVE SUN EDIT - Who is the washer
+	//SHOULD_CALL_PARENT(TRUE) MOJAVE SUN EDIT - No, I dont think it should
 
 	. = FALSE
 	if(SEND_SIGNAL(src, COMSIG_COMPONENT_CLEAN_ACT, clean_types) & COMPONENT_CLEANED)
@@ -1907,6 +1911,7 @@
 	SHOULD_CALL_PARENT(TRUE)
 	if(density == new_value)
 		return
+	SEND_SIGNAL(src, COMSIG_ATOM_SET_DENSITY, new_value)
 	. = density
 	density = new_value
 
@@ -2187,7 +2192,11 @@
 				active_hud.screentip_text.maptext = ""
 			else
 				//We inline a MAPTEXT() here, because there's no good way to statically add to a string like this
-				active_hud.screentip_text.maptext = "<span class='maptext' style='text-align: center; font-size: 32px; color: [active_hud.screentip_color]'>[name][extra_context]</span>"
+				active_hud.screentip_text.maptext = "<span class='maptext' style='text-align: center; font-size: 32px; color: [active_hud.screentip_color]'>[get_screentip_name(client)][extra_context]</span>"
+
+/// Returns the atom name that should be used on screentip
+/atom/proc/get_screentip_name(client/hovering_client)
+	return name
 
 /// Gets a merger datum representing the connected blob of objects in the allowed_types argument
 /atom/proc/GetMergeGroup(id, list/allowed_types)

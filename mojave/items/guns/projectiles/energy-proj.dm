@@ -42,6 +42,12 @@
 	wound_bonus = 0
 	bare_wound_bonus = 5
 
+/obj/projectile/beam/ms13/laser/wattz_pistol/magneto
+	name = "laser beam"
+	range = 25
+	damage = 15
+	subtractible_armour_penetration = 20
+
 /obj/projectile/beam/ms13/laser/stan_pistol
 	name = "weak laser beam"
 	range = 21
@@ -212,3 +218,33 @@
 	subtractible_armour_penetration = 20
 	wound_bonus = 15
 	bare_wound_bonus = 10
+
+// Gauss Projectiles //
+
+/obj/projectile/bullet/ms13/gauss
+	name = "gauss bullet"
+	icon = 'mojave/icons/objects/projectiles/projectiles.dmi'
+	icon_state = "gauss"
+	armour_penetration = 0
+	damage = 0
+	wound_bonus = 0
+	bare_wound_bonus = 0
+	speed = 0.25
+
+/obj/projectile/bullet/ms13/gauss/pistol
+	damage = 30
+	subtractible_armour_penetration = 60
+	wound_bonus = 10
+	bare_wound_bonus = 0
+
+/obj/projectile/bullet/ms13/gauss/rifle
+	damage = 40
+	subtractible_armour_penetration = 75
+	wound_bonus = 10
+	bare_wound_bonus = 0
+
+/obj/projectile/bullet/ms13/gauss/sniper
+	damage = 35
+	subtractible_armour_penetration = 65
+	wound_bonus = 10
+	bare_wound_bonus = 0

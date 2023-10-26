@@ -7,17 +7,36 @@
 	var/t_has = p_have()
 	var/t_is = p_are()
 	var/t_es = p_es()
+	var/obscured = check_obscured_slots()
 	var/obscure_name
+	var/skipface = (wear_mask && (wear_mask.flags_inv & HIDEFACE)) || (head && (head.flags_inv & HIDEFACE))
 
 	if(isliving(user))
 		var/mob/living/L = user
 		if(HAS_TRAIT(L, TRAIT_PROSOPAGNOSIA) || HAS_TRAIT(L, TRAIT_INVISIBLE_MAN))
 			obscure_name = TRUE
 
-	. = list("<span class='info'>*---------*\nThis is <EM>[!obscure_name ? name : "Unknown"]</EM>!")
-
-	var/obscured = check_obscured_slots()
-	var/skipface = (wear_mask && (wear_mask.flags_inv & HIDEFACE)) || (head && (head.flags_inv & HIDEFACE))
+	. = list("<span class='info'>*---------*\nThis is <EM>[obscure_name ? "Unknown" : name]</EM>!")
+	if(user != src)
+		if(!obscure_name && !skipface)
+			var/face_name = get_face_name("")
+			if(face_name)
+				//if we have no guestbook, we just KNOW okay?
+				var/known_name = user.mind?.guestbook ? user.mind.guestbook.get_known_name(user, src, face_name) : face_name
+				if(known_name)
+					var/actually = (known_name != name) ? "actually " : "really "
+					. += "Oh, it's [actually]<EM>[known_name]</EM>!"
+				else
+					. += "You don't recognize [t_him]."
+			else
+				. += "You can't see [t_his] face very well."
+		else
+			. += "You can't see [t_his] face very well."
+	else
+		var/self_message =  "It's you, <EM>[real_name]</EM>."
+		if(obscure_name || skipface || !get_face_name(""))
+			self_message += " Your face is hidden."
+		. += self_message
 
 	//uniform
 	if(w_uniform && !(obscured & ITEM_SLOT_ICLOTHING) && !(w_uniform.item_flags & EXAMINE_SKIP))
@@ -358,7 +377,7 @@
 			if(ai_controller?.ai_status == AI_STATUS_ON)
 				msg += "[span_deadsay("[t_He] do[t_es]n't appear to be [t_him]self.")]\n"
 			else if(!key)
-				msg += "[span_deadsay("[t_He] [t_is] totally catatonic. The stresses of life in deep-space must have been too much for [t_him]. Any recovery is unlikely.")]\n"
+				msg += "[span_deadsay("[t_He] [t_has] a blank, absent-minded stare and appears completely unresponsive to anything.")]\n" //MOJAVE SUN EDIT - Unimmersive space sleep shit
 			else if(!client)
 				msg += "[t_He] [t_has] a blank, absent-minded stare and appears completely unresponsive to anything. [t_He] may snap out of it soon.\n"
 
@@ -465,7 +484,10 @@
 		if(101 to INFINITY)
 			age_text = "withering away"
 	. += list(span_notice("[p_they(TRUE)] appear[p_s()] to be [age_text]."))
-	// MOJAVE SUN EDIT BEGIN
+	// MOJAVE EDIT BEGIN
+	switch(fatness)
+		if(FATNESS_OBESE)
+			. += list(span_warning("[p_they(TRUE)] [p_are()] a bumbling tub of lard."))
 	if(on_examined_check(user, TRUE))
 		user.on_examine_atom(src, TRUE)
-	// MOJAVE SUN EDIT END
+	// MOJAVE EDIT END

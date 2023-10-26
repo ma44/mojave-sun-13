@@ -12,7 +12,7 @@
 	px_x = 0
 	px_y = -8
 	stam_damage_coeff = 1
-	body_damage_coeff = 1.1 //MOJAVE EDIT - Original value is 1
+	body_damage_coeff = 1.15 //MOJAVE EDIT - Original value is 1
 	max_stamina_damage = 100
 	wound_resistance = 0 //MOJAVE EDIT - Original value is 5
 	disabled_wound_penalty = 25
@@ -269,7 +269,7 @@
 	say(message, language, sanitize = FALSE)
 	return NOPASS
 
-/obj/item/bodypart/head/GetVoice()
+/obj/item/bodypart/head/GetVoice(if_no_voice = "Unknown")
 	return "The head of [real_name]"
 
 /obj/item/bodypart/head/monkey
